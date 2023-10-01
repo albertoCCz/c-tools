@@ -1,7 +1,7 @@
 #ifndef STRINGV_H_
 #define STRINGV_H_
 
-#define STRINGV_MAX_CAPACITY      1024
+#define STRINGV_MAX_CAPACITY   1024
 #define STRINGVA_MAX_CAPACITY  100
 
 #include <stdlib.h>
@@ -50,7 +50,11 @@ void stringv_print(StringV stringv)
 StringV stringv_create(char *str)
 {
     StringV stringv;
-    
+
+    // TODO: decide what to do when STRINGV_MAX_CAPACITY is reached.
+    //       In this case I guess I should fill stringv in with as
+    //       much as I can and let the user know max capacity has
+    //       been reached.
     stringv.count = 0;
     for (size_t i = 0; i < STRINGV_MAX_CAPACITY && str[i] != '\0'; i++) stringv.count++;
     stringv.addr = (char*) calloc(stringv.count, sizeof(char));
@@ -99,7 +103,10 @@ StringVA stringv_split_by_delim(StringV stringv, char c)
     StringVA stringva;
     stringva.stringvs = (StringV*) calloc(STRINGVA_MAX_CAPACITY, sizeof(StringV));
     stringva.count = 0;
-    
+
+    // TODO: can't put more than STRINGVA_MAX_CAPACITY StringV pointers
+    //       at stringva. I should either let user know this or
+    //       to reallocate to a bigger size.
     for (size_t i = 0; i < stringv.count; ++i) {
         if ((i == 0 && stringv.sv[i] != c) || (i > 0 && stringv.sv[i-1] == c)) {
             stringva.count++;
