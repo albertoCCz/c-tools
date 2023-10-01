@@ -5,6 +5,7 @@
 #define STRINGVA_MAX_CAPACITY  100
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 // structs
 typedef struct StringV {
@@ -30,6 +31,10 @@ void stringv_rtrim(StringV *stringv);
 void stringv_trim(StringV *stringv);
 
 StringVA stringv_split_by_delim(StringV stringv, char c);
+
+bool stringv_starts_with(StringV stringv, char* prefix, size_t prefix_sz);
+bool stringv_ends_with(StringV stringv, char* sufix, size_t sufix_sz);
+bool stringv_contains(StringV stringv, char *substr, size_t substr_sz);
 
 // implementations
 #ifdef STRINGV_IMPLEMENTATION
@@ -107,6 +112,48 @@ StringVA stringv_split_by_delim(StringV stringv, char c)
     
     return stringva;
 }
+
+bool stringv_starts_with(StringV stringv, char* prefix, size_t prefix_sz)
+{
+    if (stringv.count >= prefix_sz) {
+        for (size_t i = 0; i < prefix_sz; ++i) {
+            if (stringv.sv[i] != prefix[i]) return false;
+        }
+    } else {
+        return false;
+    }
+    return true;
+}
+
+bool stringv_ends_with(StringV stringv, char* sufix, size_t sufix_sz)
+{
+    if (stringv.count >= sufix_sz) {
+        for (size_t i = 0; i < sufix_sz; ++i) {
+            if (stringv.sv[stringv.count-1 - i] != sufix[sufix_sz-1 - i]) return false;
+        }
+    } else {
+        return false;
+    }
+    return true;
+}
+
+bool stringv_contains(StringV stringv, char *substr, size_t substr_sz)
+{
+    if (stringv.count >= substr_sz) {
+        for (size_t i = 0; i < stringv.count; ++i) {
+            bool found = true;
+            for (size_t j = 0; j < substr_sz; ++j) {
+                if (i+j >= stringv.count) return false;
+                found = found && stringv.sv[i+j] == substr[j];
+                if (!found) break;
+            }
+            if (found) return true;
+        }
+    } else {
+        return false;
+    }
+}
+
 
 #endif // STRINGV_IMPLEMENTATION
 #endif // STRINGV_H_
