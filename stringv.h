@@ -1,22 +1,22 @@
 #ifndef STRINGV_H_
 #define STRINGV_H_
 
-#define STRINGV_MAX_CAPACITY   1024
-#define STRINGVA_MAX_CAPACITY  100
+#define STRINGV_MAX_CAPACITY   1024 // number of char
+#define STRINGVA_MAX_CAPACITY  100  // number of StringV elems
 
 #include <stdlib.h>
 #include <stdbool.h>
 
 // structs
 typedef struct StringV {
-    char* addr;
-    char* sv;
-    size_t count;
+    char* addr;    // to indicate if it's freeable
+    char* sv;      // begining of view
+    size_t count;  // number of elems in the view
 } StringV;
 
 typedef struct StringVA {
     StringV *stringvs;
-    size_t count;
+    size_t count;       // number of elems in views' array
 } StringVA;
 
 // prototypes
@@ -47,22 +47,10 @@ void stringv_print(StringV stringv)
     for (size_t i = 0; i < stringv.count; ++i) fputc(stringv.sv[i], stdout);
 }
 
-StringV stringv_create(char *str)
-{
-    StringV stringv;
-
-    // TODO: decide what to do when STRINGV_MAX_CAPACITY is reached.
-    //       In this case I guess I should fill stringv in with as
-    //       much as I can and let the user know max capacity has
-    //       been reached.
-    stringv.count = 0;
-    for (size_t i = 0; i < STRINGV_MAX_CAPACITY && str[i] != '\0'; i++) stringv.count++;
-    stringv.addr = (char*) calloc(stringv.count, sizeof(char));
-    memcpy(stringv.addr, str, stringv.count*sizeof(char));
-    stringv.sv = stringv.addr;
-
-    return stringv;
-}
+typedef enum STRINGV_CREATE_MODE {
+    SINGLE = 0,
+    MULTI
+} STRINGV_CREATE_MODE;
 
 void stringv_destroy(StringV *stringv)
 {
@@ -71,7 +59,63 @@ void stringv_destroy(StringV *stringv)
 
 void stringv_destroy_stringva(StringVA *stringva)
 {
+    for (size_t i = 0; i < stringva->count; ++i) {
+        if (stringva->stringvs[i].addr != NULL) free(stringva->stringvs[i].addr);
+    }
     free(stringva->stringvs);
+}
+
+static StringV __stringv_create(char *str, STRINGV_CREATE_MODE mode)
+{
+    StringV stringv;
+
+    stringv.count = 0;
+    size_t i = 0;
+    while (str[i] != '\0') {
+        stringv.count++;
+        i++;
+        if (stringv.count >= STRINGV_MAX_CAPACITY) {
+            if (mode == SINGLE) printf("[WARNING]: STRINGV_MAX_CAPACITY (%d bytes) reached when creating StringV. Consider usign stringv_create_stringva\n", sizeof(char)*STRINGV_MAX_CAPACITY);
+            break;
+        }
+    }
+    stringv.addr = (char*) calloc(stringv.count, sizeof(char));
+    memcpy(stringv.addr, str, stringv.count*sizeof(char));
+    stringv.sv = stringv.addr;
+
+    return stringv;
+}
+
+StringV stringv_create(char *str)
+{
+    return __stringv_create(str, SINGLE);
+}
+
+StringVA stringv_create_stringva(char *str)
+{
+    StringVA stringva;
+    stringva.stringvs = (StringV*) calloc(STRINGVA_MAX_CAPACITY, sizeof(StringV));
+    stringva.count = 0;
+    
+    StringV stringv;
+
+    size_t str_offset = 0;
+    while (1) {
+         if (stringva.count >= STRINGVA_MAX_CAPACITY) {
+            printf("[WARNING]: STRINGVA_MAX_CAPACITY (%d x StringV elements) reached when 'stringv_create_stringva'\n", STRINGVA_MAX_CAPACITY);
+            break;
+        }
+        
+         stringv = __stringv_create(str + str_offset, MULTI);
+         if (stringv.count > 0) {
+             stringva.stringvs[stringva.count] = stringv;
+             str_offset += stringv.count;
+             stringva.count++;
+         } else {
+             break;
+         }
+    }
+    return stringva;
 }
 
 void stringv_ltrim(StringV *stringv)
@@ -104,13 +148,15 @@ StringVA stringv_split_by_delim(StringV stringv, char c)
     stringva.stringvs = (StringV*) calloc(STRINGVA_MAX_CAPACITY, sizeof(StringV));
     stringva.count = 0;
 
-    // TODO: can't put more than STRINGVA_MAX_CAPACITY StringV pointers
-    //       at stringva. I should either let user know this or
-    //       to reallocate to a bigger size.
     for (size_t i = 0; i < stringv.count; ++i) {
+        if (stringva.count >= STRINGVA_MAX_CAPACITY) {
+            printf("[WARNING]: STRINGVA_MAX_CAPACITY (%d x StringV elements) reached when 'stringv_split_by_delim'\n", STRINGVA_MAX_CAPACITY);
+            break;
+        }
+        
         if ((i == 0 && stringv.sv[i] != c) || (i > 0 && stringv.sv[i-1] == c)) {
             stringva.count++;
-            stringva.stringvs[stringva.count-1].addr = stringv.sv + i;
+            stringva.stringvs[stringva.count-1].addr = NULL;
             stringva.stringvs[stringva.count-1].sv   = stringv.sv + i;
         }
         
