@@ -21,6 +21,7 @@ typedef struct StringVA {
 
 // prototypes
 StringV stringv_create(char *str);
+StringVA stringv_create_stringva(char *str);
 void stringv_destroy(StringV *stringv);
 void stringv_destroy_stringva(StringVA *stringva);
 
@@ -35,6 +36,9 @@ StringVA stringv_split_by_delim(StringV stringv, char c);
 bool stringv_starts_with(StringV stringv, char* prefix, size_t prefix_sz);
 bool stringv_ends_with(StringV stringv, char* sufix, size_t sufix_sz);
 bool stringv_contains(StringV stringv, char *substr, size_t substr_sz);
+
+void stringv_remove_prefix(StringV *stringv, size_t n);
+void stringv_remove_sufix(StringV *stringv, size_t n);
 
 // implementations
 #ifdef STRINGV_IMPLEMENTATION
@@ -207,6 +211,26 @@ bool stringv_contains(StringV stringv, char *substr, size_t substr_sz)
     }
 }
 
+void stringv_remove_prefix(StringV *stringv, size_t n)
+{
+    if (n > stringv->count) {
+        fprintf(stderr, "[ERROR]: Provided prefix size (%zu) is bigger than stringv count (%zu)\n",
+                n, stringv->count);
+        return;
+    }
+    stringv->sv    += n;
+    stringv->count -= n;
+}
+
+void stringv_remove_sufix(StringV *stringv, size_t n)
+{
+    if (n > stringv->count) {
+        fprintf(stderr, "[ERROR]: Provided sufix size (%zu) is bigger than stringv count (%zu)\n",
+                n, stringv->count);
+        return;
+    }
+    stringv->count -= n;
+}
 
 #endif // STRINGV_IMPLEMENTATION
 #endif // STRINGV_H_
