@@ -45,5 +45,4 @@ int deque_front(Deque deque);
 int deque_back(Deque deque);
 
 void deque_print(Deque deque);
-
 ```
