@@ -17,7 +17,7 @@ void stringv_ltrim(StringV *stringv);
 void stringv_rtrim(StringV *stringv);
 void stringv_trim(StringV *stringv);
 
-StringVA stringv_split_by_delim(StringV stringv, char c);
+StringVA stringv_split_by_delim(StringV stringv, char *c)
 
 bool stringv_starts_with(StringV stringv, char* prefix, size_t prefix_sz);
 bool stringv_ends_with(StringV stringv, char* sufix, size_t sufix_sz);
