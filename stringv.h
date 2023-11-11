@@ -8,7 +8,7 @@
 #include <stdbool.h>
 
 // structs
-typedef struct StringV {
+typedef struct  {
     char* addr;    // to indicate if it's freeable
     char* sv;      // begining of view
     size_t count;  // number of elems in the view
@@ -31,7 +31,7 @@ void stringv_ltrim(StringV *stringv);
 void stringv_rtrim(StringV *stringv);
 void stringv_trim(StringV *stringv);
 
-StringVA stringv_split_by_delim(StringV stringv, char c);
+StringVA stringv_split_by_delim(StringV stringv, char *c);
 
 bool stringv_starts_with(StringV stringv, char* prefix, size_t prefix_sz);
 bool stringv_ends_with(StringV stringv, char* sufix, size_t sufix_sz);
@@ -143,30 +143,44 @@ void stringv_trim(StringV *stringv)
     stringv_rtrim(stringv);
 }
 
-StringVA stringv_split_by_delim(StringV stringv, char c)
+StringVA stringv_split_by_delim(StringV stringv, char *c)
 {
-    // asfasfasf-asfasf-asdfasdfsfasdffsd-sdf-asfss-asdfasdfasdf-
-    // |       \ |    \ |               \ | \ |   \ |          \
-
+    size_t delim_len = strlen(c);
+    
     StringVA stringva;
     stringva.stringvs = (StringV*) calloc(STRINGVA_MAX_CAPACITY, sizeof(StringV));
-    stringva.count = 0;
+    stringva.count    = 0;
 
+    char buff[delim_len + 1];
+    
+    bool store_new = true;
     for (size_t i = 0; i < stringv.count; ++i) {
         if (stringva.count >= STRINGVA_MAX_CAPACITY) {
             printf("[WARNING]: STRINGVA_MAX_CAPACITY (%d x StringV elements) reached when 'stringv_split_by_delim'\n", STRINGVA_MAX_CAPACITY);
             break;
         }
+
+        size_t buff_content_len = (stringv.count - i) >= delim_len ? delim_len : stringv.count - i;
+        memcpy(buff, stringv.sv + i, buff_content_len); // update moving buffer
+        buff[buff_content_len] = '\0';
         
-        if ((i == 0 && stringv.sv[i] != c) || (i > 0 && stringv.sv[i-1] == c)) {
-            stringva.count++;
-            stringva.stringvs[stringva.count-1].addr = NULL;
-            stringva.stringvs[stringva.count-1].sv   = stringv.sv + i;
+        if (strcmp(buff, c) != 0) {
+            if (store_new) {
+                stringva.stringvs[stringva.count] = (StringV) {
+                    .addr  = NULL,
+                    .sv    = stringv.sv + i,
+                    .count = 1
+                };
+                stringva.count++;
+                store_new = false;
+            } else {
+                stringva.stringvs[stringva.count - 1].count++;
+            }
+        } else {
+            i += delim_len - 1;
+            store_new = true;
         }
-        
-        if (stringv.sv[i] != c) stringva.stringvs[stringva.count-1].count++;
     }
-    
     return stringva;
 }
 
