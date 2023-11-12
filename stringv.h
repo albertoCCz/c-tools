@@ -163,7 +163,7 @@ StringVA stringv_split_by_delim(StringV stringv, char *c)
         size_t buff_content_len = (stringv.count - i) >= delim_len ? delim_len : stringv.count - i;
         memcpy(buff, stringv.sv + i, buff_content_len); // update moving buffer
         buff[buff_content_len] = '\0';
-        
+
         if (strcmp(buff, c) != 0) {
             if (store_new) {
                 stringva.stringvs[stringva.count] = (StringV) {
@@ -177,10 +177,32 @@ StringVA stringv_split_by_delim(StringV stringv, char *c)
                 stringva.stringvs[stringva.count - 1].count++;
             }
         } else {
+            if (store_new) {
+                stringva.stringvs[stringva.count] = (StringV) {
+                    .addr  = NULL,
+                    .sv    = "",
+                    .count = 0
+                };
+                stringva.count++;
+            }
+
             i += delim_len - 1;
             store_new = true;
         }
     }
+
+    if (store_new) {
+        if (stringva.count >= STRINGVA_MAX_CAPACITY) {
+            printf("[WARNING]: STRINGVA_MAX_CAPACITY (%d x StringV elements) reached when 'stringv_split_by_delim'\n", STRINGVA_MAX_CAPACITY);
+        }
+        stringva.stringvs[stringva.count] = (StringV) {
+            .addr  = NULL,
+            .sv    = "",
+            .count = 0
+        };
+        stringva.count++;
+    }
+
     return stringva;
 }
 
