@@ -58,7 +58,7 @@ typedef enum STRINGV_CREATE_MODE {
 
 void stringv_destroy(StringV *stringv)
 {
-    free(stringv->addr);
+    if (stringv->addr != NULL) free(stringv->addr);
 }
 
 void stringv_destroy_stringva(StringVA *stringva)
@@ -66,7 +66,8 @@ void stringv_destroy_stringva(StringVA *stringva)
     for (size_t i = 0; i < stringva->count; ++i) {
         if (stringva->stringvs[i].addr != NULL) free(stringva->stringvs[i].addr);
     }
-    free(stringva->stringvs);
+
+    if (stringva->stringvs != NULL) free(stringva->stringvs);
 }
 
 static StringV __stringv_create(char *str, STRINGV_CREATE_MODE mode)
