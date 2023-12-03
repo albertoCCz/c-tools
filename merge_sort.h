@@ -9,22 +9,20 @@ void ms_merge(int arr[], int a[], size_t a_size, int b[], int b_size);
     
 #ifdef MERGE_SORT_IMPLEMENTATION
 
+#include <string.h>
+
 // implementations
 void ms_merge(int arr[], int a[], size_t a_size, int b[], int b_size)
 {
     size_t c = 0, i = 0, j = 0;
     while ((i <= a_size) || (j <= b_size)) {
         if (i == a_size) {
-            for (size_t k = j; k < b_size; ++k) {
-                arr[c] = b[k];
-                ++c;
-            }
+            memcpy(arr+c, b+j, (b_size - j) * sizeof(int));
+            c += b_size - j;
             break; // while
         } else if (j == b_size) {
-            for (size_t k = i; k < a_size; ++k) {
-                arr[c] = a[k];
-                ++c;
-            }
+            memcpy(arr+c, a+i, (a_size - i) * sizeof(int));
+            c += a_size - i;
             break; // while
         } else {
             if (a[i] <= b[j]) {
@@ -51,13 +49,8 @@ void ms_merge_sort_int(int arr[], size_t arr_size)
     int a[len_a];
     int b[len_b];
 
-    for (size_t i = 0; i < len_a; ++i) {
-        a[i] = arr[p_a + i];
-    }
-    
-    for (size_t i = 0; i < len_b; ++i) {
-        b[i] = arr[p_b + i];
-    }
+    memcpy(a, arr + p_a, len_a * sizeof(int));
+    memcpy(b, arr + p_b, len_b * sizeof(int));
     
     if (len_a > 1) ms_merge_sort_int(a, len_a);
     if (len_b > 1) ms_merge_sort_int(b, len_b);
