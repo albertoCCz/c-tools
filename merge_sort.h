@@ -9,7 +9,7 @@ void ms_merge(int arr[], int a[], size_t a_size, int b[], int b_size);
     
 #ifdef MERGE_SORT_IMPLEMENTATION
 
-#include <string.h>
+#include <string.h> // memcpy
 
 // implementations
 void ms_merge(int arr[], int a[], size_t a_size, int b[], int b_size)
