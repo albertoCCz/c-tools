@@ -9,10 +9,10 @@ void ms_merge_sort_float(float arr[], size_t arr_size);
 void ms_merge_sort_double(double arr[], size_t arr_size);
 void ms_merge_sort_string(char *arr[], size_t arr_size);
 
-void ms_merge_int(int arr[], int a[], size_t a_size, int b[], size_t b_size);
-void ms_merge_float(float arr[], float a[], size_t a_size, float b[], size_t b_size);
-void ms_merge_double(double arr[], double a[], size_t a_size, double b[], size_t b_size);
-void ms_merge_string(char *arr[], char * a[], size_t a_size, char * b[], size_t b_size);
+void _ms_merge_int(int arr[], int a[], size_t a_size, int b[], size_t b_size);
+void _ms_merge_float(float arr[], float a[], size_t a_size, float b[], size_t b_size);
+void _ms_merge_double(double arr[], double a[], size_t a_size, double b[], size_t b_size);
+void _ms_merge_string(char *arr[], char * a[], size_t a_size, char * b[], size_t b_size);
 
 #ifdef MERGE_SORT_IMPLEMENTATION
 
@@ -20,7 +20,7 @@ void ms_merge_string(char *arr[], char * a[], size_t a_size, char * b[], size_t 
 
 // implementations
 // ms_merge_TYPE
-void ms_merge_int(int arr[], int a[], size_t a_size, int b[], size_t b_size)
+void _ms_merge_int(int arr[], int a[], size_t a_size, int b[], size_t b_size)
 {
     size_t c = 0, i = 0, j = 0;
     while ((i <= a_size) || (j <= b_size)) {
@@ -45,7 +45,7 @@ void ms_merge_int(int arr[], int a[], size_t a_size, int b[], size_t b_size)
     }
 }
 
-void ms_merge_float(float arr[], float a[], size_t a_size, float b[], size_t b_size)
+void _ms_merge_float(float arr[], float a[], size_t a_size, float b[], size_t b_size)
 {
     size_t c = 0, i = 0, j = 0;
     while ((i <= a_size) || (j <= b_size)) {
@@ -70,7 +70,7 @@ void ms_merge_float(float arr[], float a[], size_t a_size, float b[], size_t b_s
     }
 }
 
-void ms_merge_double(double arr[], double a[], size_t a_size, double b[], size_t b_size)
+void _ms_merge_double(double arr[], double a[], size_t a_size, double b[], size_t b_size)
 {
     size_t c = 0, i = 0, j = 0;
     while ((i <= a_size) || (j <= b_size)) {
@@ -95,7 +95,7 @@ void ms_merge_double(double arr[], double a[], size_t a_size, double b[], size_t
     }
 }
 
-void ms_merge_string(char *arr[], char * a[], size_t a_size, char * b[], size_t b_size)
+void _ms_merge_string(char *arr[], char * a[], size_t a_size, char * b[], size_t b_size)
 {
     size_t c = 0, i = 0, j = 0;
     while ((i <= a_size) || (j <= b_size)) {
@@ -139,7 +139,7 @@ void ms_merge_sort_int(int arr[], size_t arr_size)
     if (len_a > 1) ms_merge_sort_int(a, len_a);
     if (len_b > 1) ms_merge_sort_int(b, len_b);
     
-    ms_merge_int(arr, a, len_a, b, len_b);
+    _ms_merge_int(arr, a, len_a, b, len_b);
 }
 
 void ms_merge_sort_float(float arr[], size_t arr_size)
@@ -160,7 +160,7 @@ void ms_merge_sort_float(float arr[], size_t arr_size)
     if (len_a > 1) ms_merge_sort_float(a, len_a);
     if (len_b > 1) ms_merge_sort_float(b, len_b);
     
-    ms_merge_float(arr, a, len_a, b, len_b);
+    _ms_merge_float(arr, a, len_a, b, len_b);
 }
 
 void ms_merge_sort_double(double arr[], size_t arr_size)
@@ -181,7 +181,7 @@ void ms_merge_sort_double(double arr[], size_t arr_size)
     if (len_a > 1) ms_merge_sort_double(a, len_a);
     if (len_b > 1) ms_merge_sort_double(b, len_b);
     
-    ms_merge_double(arr, a, len_a, b, len_b);
+    _ms_merge_double(arr, a, len_a, b, len_b);
 }
 
 void ms_merge_sort_string(char *arr[], size_t arr_size)
@@ -202,7 +202,7 @@ void ms_merge_sort_string(char *arr[], size_t arr_size)
     if (len_a > 1) ms_merge_sort_string(a, len_a);
     if (len_b > 1) ms_merge_sort_string(b, len_b);
     
-    ms_merge_string(arr, a, len_a, b, len_b);
+    _ms_merge_string(arr, a, len_a, b, len_b);
 }
 
 #endif // MERGE_SORT_IMPLEMENTATION
