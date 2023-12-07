@@ -22,11 +22,16 @@ struct Paths {
     size_t count;
 } Paths;
 
-void get_cwd_paths(struct Paths *paths, char *file_type)
+void get_cwd_paths(struct Paths *paths, const char *file_type)
 {
-    char dir[1024] = { 0 };
+    char dir[MAX_PATH_LEN] = { 0 };
     getcwd(dir, sizeof(dir)/sizeof(*dir));
-    printf("'%s':\n", dir);
+
+    // copy cwd into paths
+    size_t dir_sz = strlen(dir);
+    memcpy(*paths->paths, dir, dir_sz);
+    (*paths->paths)[dir_sz] = '\0';
+    paths->count++;
 
     DIR *dir_stream;
     if ((dir_stream = opendir(dir)) == NULL) {
@@ -39,17 +44,19 @@ void get_cwd_paths(struct Paths *paths, char *file_type)
     errno = 0;
     while ((dir_struct = readdir(dir_stream)) != NULL) {
         StringV name = stringv_create(dir_struct->d_name);
+        // filter paths by file_type
         if (stringv_ends_with(name, file_type, strlen(file_type))) {
-            // check enough space available for path + '\0'
+            // check if enough space available for path + '\0'
             if (MAX_PATH_LEN < name.count) {
                 puts("Not enought space in paths->paths[paths->count] to memcpy name.sv\n");
                 return; // return so allocated mem can be freed in calling function
             }
-            
+
+            // save path
             char *next_path_pos = *paths->paths + paths->count * paths->path_len;
             size_t next_path_sz  = name.count * sizeof(*name.sv);
             memcpy(next_path_pos, name.sv, next_path_sz);
-            next_path_pos[next_path_sz + 1] = '\0';
+            next_path_pos[next_path_sz] = '\0';
             paths->count++;
         }
         stringv_destroy(&name);
@@ -61,12 +68,12 @@ void get_cwd_paths(struct Paths *paths, char *file_type)
     }
 
     // sort paths
-    ms_merge_sort_string(paths->paths, paths->count);
+    ms_merge_sort_string(&paths->paths[1] , paths->count - 1);
 }
 
 int main(int argc, char **argv)
 {
-    char *file_type = "";
+    const char *file_type = "";
     if (argc > 1) file_type = argv[1];
 
     // initialise paths struct
@@ -82,8 +89,9 @@ int main(int argc, char **argv)
 
     // get paths and print them
     get_cwd_paths(&paths, file_type);
-    for (size_t i = 0; i < paths.count; ++i) {
-        printf("  %zu  '%s'\n", i, paths.paths[i]);
+    printf("CWD: %s\n", paths.paths[0]);
+    for (size_t i = 0; i < paths.count - 1; ++i) {
+        printf("  % 4zu  %s\n", i, paths.paths[i + 1]);
     }
 
     if (paths.paths != NULL) free(paths.paths);
