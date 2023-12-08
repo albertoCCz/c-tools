@@ -2,7 +2,7 @@
 #include <string.h>    // memcpy
 #include <unistd.h>    // getcwd
 #include <dirent.h>    // opendir, readdir, closedir
-#include <stdlib.h>    // exit, EXIT_FAILURE
+#include <stdlib.h>    // exit, EXIT_FAILURE, EXIT_SUCCESS
 #include <errno.h>     // errno
 
 #define STRINGV_IMPLEMENTATION
@@ -72,10 +72,35 @@ void get_cwd_paths(struct Paths *paths, const char *file_type)
     ms_merge_sort_string(&paths->paths[1] , paths->count - 1);
 }
 
+void print_usage(void)
+{
+    printf("Show files and paths in current working directory\n\n"
+           "USAGE: ./paths [OPTIONS | file_type]\n"
+           "OPTIONS:\n"
+           "  -h, --help    Print this help\n\n"
+           "EXAMPLES:\n"
+           "  ./paths       List all files in cwd\n"
+           "  ./paths '.c'  List all C source code files in cwd\n");
+}
+
 int main(int argc, char **argv)
 {
-    const char *file_type = "";
-    if (argc > 1) file_type = argv[1];
+    const char *file_type;
+    if (argc == 1) {
+        file_type = "";
+    }
+    else if (argc > 1) {
+        if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
+            print_usage();
+            exit(EXIT_SUCCESS);
+        }
+
+        file_type = argv[1];
+    }
+    else {
+        print_usage();
+        exit(EXIT_FAILURE);
+    }
 
     // initialise paths struct
     char *paths_ptr = (char *) calloc(MAX_N_PATHS * MAX_PATH_LEN, sizeof(char));
