@@ -33,9 +33,9 @@ void stringv_trim(StringV *stringv);
 
 StringVA stringv_split_by_delim(StringV stringv, char *c);
 
-bool stringv_starts_with(StringV stringv, char* prefix, size_t prefix_sz);
-bool stringv_ends_with(StringV stringv, char* sufix, size_t sufix_sz);
-bool stringv_contains(StringV stringv, char *substr, size_t substr_sz);
+bool stringv_starts_with(StringV stringv, const char *prefix, size_t prefix_sz);
+bool stringv_ends_with(StringV stringv, const char *sufix, size_t sufix_sz);
+bool stringv_contains(StringV stringv, const char *substr, size_t substr_sz);
 
 void stringv_remove_prefix(StringV *stringv, size_t n);
 void stringv_remove_sufix(StringV *stringv, size_t n);
@@ -207,7 +207,7 @@ StringVA stringv_split_by_delim(StringV stringv, char *c)
     return stringva;
 }
 
-bool stringv_starts_with(StringV stringv, char* prefix, size_t prefix_sz)
+bool stringv_starts_with(StringV stringv, const char *prefix, size_t prefix_sz)
 {
     if (stringv.count >= prefix_sz) {
         for (size_t i = 0; i < prefix_sz; ++i) {
@@ -219,7 +219,7 @@ bool stringv_starts_with(StringV stringv, char* prefix, size_t prefix_sz)
     return true;
 }
 
-bool stringv_ends_with(StringV stringv, char* sufix, size_t sufix_sz)
+bool stringv_ends_with(StringV stringv, const char *sufix, size_t sufix_sz)
 {
     if (stringv.count >= sufix_sz) {
         for (size_t i = 0; i < sufix_sz; ++i) {
@@ -231,7 +231,7 @@ bool stringv_ends_with(StringV stringv, char* sufix, size_t sufix_sz)
     return true;
 }
 
-bool stringv_contains(StringV stringv, char *substr, size_t substr_sz)
+bool stringv_contains(StringV stringv, const char *substr, size_t substr_sz)
 {
     if (stringv.count >= substr_sz) {
         for (size_t i = 0; i < stringv.count; ++i) {
