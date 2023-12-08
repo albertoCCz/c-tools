@@ -20,8 +20,8 @@ typedef struct StringVA {
 } StringVA;
 
 // prototypes
-StringV stringv_create(char *str);
-StringVA stringv_create_stringva(char *str);
+StringV stringv_create(const char *str);
+StringVA stringv_create_stringva(const char *str);
 void stringv_destroy(StringV *stringv);
 void stringv_destroy_stringva(StringVA *stringva);
 
@@ -70,7 +70,7 @@ void stringv_destroy_stringva(StringVA *stringva)
     if (stringva->stringvs != NULL) free(stringva->stringvs);
 }
 
-static StringV __stringv_create(char *str, STRINGV_CREATE_MODE mode)
+static StringV __stringv_create(const char *str, STRINGV_CREATE_MODE mode)
 {
     StringV stringv;
 
@@ -91,12 +91,12 @@ static StringV __stringv_create(char *str, STRINGV_CREATE_MODE mode)
     return stringv;
 }
 
-StringV stringv_create(char *str)
+StringV stringv_create(const char *str)
 {
     return __stringv_create(str, SINGLE);
 }
 
-StringVA stringv_create_stringva(char *str)
+StringVA stringv_create_stringva(const char *str)
 {
     StringVA stringva;
     stringva.stringvs = (StringV*) calloc(STRINGVA_MAX_CAPACITY, sizeof(StringV));
