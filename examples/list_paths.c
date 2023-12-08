@@ -49,7 +49,8 @@ void get_cwd_paths(struct Paths *paths, const char *file_type)
             // check if enough space available for path + '\0'
             if (MAX_PATH_LEN < name.count) {
                 puts("Not enought space in paths->paths[paths->count] to memcpy name.sv\n");
-                return; // return so allocated mem can be freed in calling function
+                if (paths->paths != NULL) free(paths->paths);
+                return;
             }
 
             // save path
@@ -89,13 +90,18 @@ int main(int argc, char **argv)
 
     // get paths and print them
     get_cwd_paths(&paths, file_type);
+    if (paths.paths == NULL) {
+        free(paths_ptr);
+        fprintf(stderr, "Error getting cwd paths");
+        exit(EXIT_FAILURE);
+    }
     printf("CWD: %s\n", paths.paths[0]);
     for (size_t i = 0; i < paths.count - 1; ++i) {
         printf("  % 4zu  %s\n", i, paths.paths[i + 1]);
     }
 
-    if (paths.paths != NULL) free(paths.paths);
-    if (paths_ptr != NULL) free(paths_ptr);
+    free(paths.paths);
+    free(paths_ptr);
     
     return 0;
 }
