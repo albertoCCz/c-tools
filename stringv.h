@@ -31,7 +31,7 @@ void stringv_ltrim(StringV *stringv);
 void stringv_rtrim(StringV *stringv);
 void stringv_trim(StringV *stringv);
 
-StringVA stringv_split_by_delim(StringV stringv, char *c);
+StringVA stringv_split_by_delim(StringV stringv, const char *c, size_t delim_len);
 
 bool stringv_starts_with(StringV stringv, const char *prefix, size_t prefix_sz);
 bool stringv_ends_with(StringV stringv, const char *sufix, size_t sufix_sz);
@@ -144,10 +144,8 @@ void stringv_trim(StringV *stringv)
     stringv_rtrim(stringv);
 }
 
-StringVA stringv_split_by_delim(StringV stringv, char *c)
+StringVA stringv_split_by_delim(StringV stringv, const char *c, size_t delim_len)
 {
-    size_t delim_len = strlen(c);
-    
     StringVA stringva;
     stringva.stringvs = (StringV*) calloc(STRINGVA_MAX_CAPACITY, sizeof(StringV));
     stringva.count    = 0;
