@@ -17,8 +17,8 @@ String View tool.
 
 Prototypes:
 ```c
-StringV stringv_create(char *str);
-StringVA stringv_create_stringva(char *str);
+StringV stringv_create(const char *str);
+StringVA stringv_create_stringva(const char *str);
 void stringv_destroy(StringV *stringv);
 void stringv_destroy_stringva(StringVA *stringva);
 
@@ -28,11 +28,11 @@ void stringv_ltrim(StringV *stringv);
 void stringv_rtrim(StringV *stringv);
 void stringv_trim(StringV *stringv);
 
-StringVA stringv_split_by_delim(StringV stringv, char *c)
+StringVA stringv_split_by_delim(StringV stringv, const char *c, size_t delim_len);
 
-bool stringv_starts_with(StringV stringv, char* prefix, size_t prefix_sz);
-bool stringv_ends_with(StringV stringv, char* sufix, size_t sufix_sz);
-bool stringv_contains(StringV stringv, char *substr, size_t substr_sz);
+bool stringv_starts_with(StringV stringv, const char *prefix, size_t prefix_sz);
+bool stringv_ends_with(StringV stringv, const char *sufix, size_t sufix_sz);
+bool stringv_contains(StringV stringv, const char *substr, size_t substr_sz);
 
 void stringv_remove_prefix(StringV *stringv, size_t n);
 void stringv_remove_sufix(StringV *stringv, size_t n);
