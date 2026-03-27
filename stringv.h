@@ -101,7 +101,7 @@ StringVA stringv_create_stringva(const char *str)
     StringVA stringva;
     stringva.stringvs = (StringV*) calloc(STRINGVA_MAX_CAPACITY, sizeof(StringV));
     stringva.count = 0;
-    
+
     StringV stringv;
 
     size_t str_offset = 0;
@@ -110,7 +110,7 @@ StringVA stringv_create_stringva(const char *str)
             printf("[WARNING]: STRINGVA_MAX_CAPACITY (%d x StringV elements) reached when 'stringv_create_stringva'\n", STRINGVA_MAX_CAPACITY);
             break;
         }
-        
+
          stringv = __stringv_create(str + str_offset, MULTI);
          if (stringv.count > 0) {
              stringva.stringvs[stringva.count] = stringv;
@@ -151,7 +151,7 @@ StringVA stringv_split_by_delim(StringV stringv, const char *c, size_t delim_len
     stringva.count    = 0;
 
     char buff[delim_len + 1];
-    
+
     bool store_new = true;
     for (size_t i = 0; i < stringv.count; ++i) {
         if (stringva.count >= STRINGVA_MAX_CAPACITY) {
@@ -207,25 +207,27 @@ StringVA stringv_split_by_delim(StringV stringv, const char *c, size_t delim_len
 
 bool stringv_starts_with(StringV stringv, const char *prefix, size_t prefix_sz)
 {
-    if (stringv.count >= prefix_sz) {
-        for (size_t i = 0; i < prefix_sz; ++i) {
-            if (stringv.sv[i] != prefix[i]) return false;
-        }
-    } else {
+    if (stringv.count < prefix_sz)
         return false;
+
+    for (size_t i = 0; i < prefix_sz; ++i) {
+        if (stringv.sv[i] != prefix[i])
+            return false;
     }
+
     return true;
 }
 
 bool stringv_ends_with(StringV stringv, const char *sufix, size_t sufix_sz)
 {
-    if (stringv.count >= sufix_sz) {
-        for (size_t i = 0; i < sufix_sz; ++i) {
-            if (stringv.sv[stringv.count-1 - i] != sufix[sufix_sz-1 - i]) return false;
-        }
-    } else {
+    if (stringv.count < sufix_sz)
         return false;
+
+    for (size_t i = 0; i < sufix_sz; ++i) {
+        if (stringv.sv[stringv.count-1 - i] != sufix[sufix_sz-1 - i])
+            return false;
     }
+
     return true;
 }
 

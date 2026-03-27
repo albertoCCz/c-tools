@@ -127,6 +127,6 @@ int main(int argc, char **argv)
 
     free(paths.paths);
     free(paths_ptr);
-    
+
     return 0;
 }
